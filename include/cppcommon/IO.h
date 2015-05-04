@@ -1,5 +1,5 @@
-#ifndef INCLUDE_CPP_IO_H_
-#define INCLUDE_CPP_IO_H_
+#ifndef INCLUDE_CPPCOMMON_IO_H_
+#define INCLUDE_CPPCOMMON_IO_H_
 
 /* IO.h : classes for Network IO.
  *
@@ -12,7 +12,7 @@
 #include <boost/asio/use_future.hpp>
 #include <boost/thread.hpp>
 
-#include "Exception.h"
+#include "../../include/cppcommon/JavaIO.h"
 
 using namespace boost;
 
@@ -24,7 +24,7 @@ namespace com
 {
 namespace myselia
 {
-namespace cpp
+namespace cppcommon
 {
 
 class IOException: public GenericException
@@ -84,10 +84,10 @@ class Socket;
  * This class imitates the java class of the same name but uses boost::asio underneath.
  * This class is thread safe.
  */
-class InputStream
+class AsioInputStream: public InputStream
 {
 	public:
-	InputStream(Socket* socket);
+	AsioInputStream(Socket* socket);
 
 	/**
 	 * Read from this stream, this will attempt to fill the buffer with data.
@@ -115,10 +115,10 @@ class InputStream
  * This class imitates the java class of the same name but uses boost::asio underneath.
  * This class is thread safe.
  */
-class OutputStream
+class AsioOutputStream: public OutputStream
 {
 	public:
-	OutputStream(Socket* socket);
+	AsioOutputStream(Socket* socket);
 
 	/**
 	 * Write then entire buffer to this output stream.
@@ -175,4 +175,4 @@ class ServerSocket
 }
 }
 
-#endif /* INCLUDE_CPP_IO_H_ */
+#endif /* INCLUDE_CPPCOMMON_IO_H_ */

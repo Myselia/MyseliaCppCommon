@@ -4,8 +4,8 @@
 #include <boost/variant/variant.hpp>
 #include <boost/variant/get.hpp>
 
-#include "Generic.h"
-#include "Exception.h"
+#include "../cppcommon/Exception.h"
+#include "../cppcommon/Generic.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ namespace com
 {
 namespace myselia
 {
-namespace cpp
+namespace cppcommon
 {
 
 class JsonParseException: public GenericException

@@ -22,7 +22,7 @@ namespace com
 {
 namespace myselia
 {
-namespace cpp
+namespace cppcommon
 {
 
 class GenericUtil

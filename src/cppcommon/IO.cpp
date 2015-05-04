@@ -1,7 +1,7 @@
-#include "../../include/cpp/IO.h"
+#include "../../include/cppcommon/IO.h"
 
 using namespace std;
-using namespace com::myselia::cpp;
+using namespace com::myselia::cppcommon;
 
 //IoService
 IoService::IoService()
@@ -34,13 +34,13 @@ void IoService::serviceHandlerThread()
 	io_service.run();
 }
 
-//InputStream
-InputStream::InputStream(Socket* socket): socket(socket)
+//AsioInputStream
+AsioInputStream::AsioInputStream(Socket* socket): socket(socket)
 {
 	//Do nothing
 }
 
-int InputStream::read(asio::mutable_buffers_1& buffer)
+int AsioInputStream::read(asio::mutable_buffers_1& buffer)
 {
 	try
 	{
@@ -58,7 +58,7 @@ int InputStream::read(asio::mutable_buffers_1& buffer)
 	}
 }
 
-int InputStream::read()
+int AsioInputStream::read()
 {
 	char cbuf[1];
 	asio::mutable_buffers_1 buffer(cbuf, sizeof(cbuf));
@@ -71,13 +71,13 @@ int InputStream::read()
 	return val;
 }
 
-//OutputStream
-OutputStream::OutputStream(Socket* socket): socket(socket)
+//AsioOutputStream
+AsioOutputStream::AsioOutputStream(Socket* socket): socket(socket)
 {
 	//Do nothing
 }
 
-void OutputStream::write(asio::mutable_buffers_1& buffer)
+void AsioOutputStream::write(asio::mutable_buffers_1& buffer)
 {
 	try
 	{
@@ -92,7 +92,7 @@ void OutputStream::write(asio::mutable_buffers_1& buffer)
 	}
 }
 
-void OutputStream::write(uchar val)
+void AsioOutputStream::write(uchar val)
 {
 	char cbuf[1];
 	cbuf[0]=val;
@@ -131,12 +131,12 @@ boost::shared_ptr<asio_socket> Socket::getAsioSocket()
 
 boost::shared_ptr<InputStream> Socket::getInputStream()
 {
-	return boost::shared_ptr<InputStream>(new InputStream(this));
+	return boost::shared_ptr<InputStream>(new AsioInputStream(this));
 }
 
 boost::shared_ptr<OutputStream> Socket::getOutputStream()
 {
-	return boost::shared_ptr<OutputStream>(new OutputStream(this));
+	return boost::shared_ptr<OutputStream>(new AsioOutputStream(this));
 }
 
 //ServerSocket

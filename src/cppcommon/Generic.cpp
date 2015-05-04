@@ -1,7 +1,7 @@
-#include "../../include/cpp/Generic.h"
+#include "../../include/cppcommon/Generic.h"
 
 using namespace std;
-using namespace com::myselia::cpp;
+using namespace com::myselia::cppcommon;
 
 char GenericUtil::getSecondLastDigit(int num)
 {
