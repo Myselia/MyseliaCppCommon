@@ -25,6 +25,36 @@ namespace myselia
 namespace cppcommon
 {
 
+class ByteBuffer
+{
+	public:
+	/**
+	 * Creates a buffer of length <code>size</code>.
+	 */
+	ByteBuffer(size_t size);
+
+	/**
+	 * Creates a copy of the provided buffer.
+	 */
+	ByteBuffer(const ByteBuffer& buffer);
+
+	~ByteBuffer();
+
+	void* getData();
+	size_t getSize();
+
+	uchar& operator[](size_t position);
+
+	private:
+	uchar* data;
+	size_t size;
+
+	/**
+	 * Disable buffer assignment for now.
+	 */
+	ByteBuffer& operator=(const ByteBuffer&);
+};
+
 class GenericUtil
 {
 	static char getSecondLastDigit(int num);

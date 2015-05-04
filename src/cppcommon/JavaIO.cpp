@@ -12,7 +12,7 @@ int FilterInputStream::read()
 	return in->read();
 }
 
-int FilterInputStream::read(asio::mutable_buffers_1& buffer)
+int FilterInputStream::read(ByteBuffer& buffer)
 {
 	return in->read(buffer);
 }

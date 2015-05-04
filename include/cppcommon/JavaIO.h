@@ -5,10 +5,8 @@
  * Classes from java.io.* package that can be implemented in C++ without heavily depending on an external library.
  */
 
-#include <boost/asio.hpp>
 #include "../../include/cppcommon/Exception.h"
 
-using namespace boost;
 using namespace com::myselia::cppcommon;
 
 namespace com
@@ -29,7 +27,7 @@ class InputStream
 	 *
 	 * throws IOException
 	 */
-	virtual int read(asio::mutable_buffers_1& buffer) = 0;
+	virtual int read(ByteBuffer& buffer) = 0;
 
 	/**
 	 * Read one byte from this stream.
@@ -52,7 +50,7 @@ class OutputStream
 	 *
 	 * throws IOException
 	 */
-	virtual void write(asio::mutable_buffers_1& buffer) = 0;
+	virtual void write(ByteBuffer& buffer) = 0;
 
 	/**
 	 * Write one byte to this output stream.
@@ -68,7 +66,7 @@ class FilterInputStream: public InputStream
 	FilterInputStream(boost::shared_ptr<InputStream> in);
 
 	int read();
-	int read(asio::mutable_buffers_1& buffer);
+	int read(ByteBuffer& buffer);
 
 	private:
 	boost::shared_ptr<InputStream> in;

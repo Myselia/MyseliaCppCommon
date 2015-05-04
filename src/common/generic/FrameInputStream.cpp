@@ -1,14 +1,13 @@
 #include "../../../include/common/generic/FrameInputStream.h"
 
-/*
 using namespace com::myselia::common::generic;
 
-FrameInputStream::FrameInputStream(InputStream fin): FrameInputStream(fin, 4)
+FrameInputStream::FrameInputStream(boost::shared_ptr<InputStream> fin): FrameInputStream(fin, 4)
 {
 	//Do nothing
 }
 
-FrameInputStream::FrameInputStream(InputStream fin, uint sizeFieldLength): FilterInputStream(fin), sizeFieldLength(sizeFieldLength)
+FrameInputStream::FrameInputStream(boost::shared_ptr<InputStream> fin, uint sizeFieldLength): FilterInputStream(fin), sizeFieldLength(sizeFieldLength)
 {
 	if(!(sizeFieldLength==1||sizeFieldLength==2||sizeFieldLength==4))
 		throw IllegalArgumentException("sizeFieldLength can only be 1 or 2 or 4 bytes");
@@ -16,24 +15,52 @@ FrameInputStream::FrameInputStream(InputStream fin, uint sizeFieldLength): Filte
 
 uint FrameInputStream::readFrameSize()
 {
+	union
+	{
+		uchar convArr[4];
+		uint16_t convS;
+		uint32_t convI;
+	};
+
 	if(sizeFieldLength==1)
 	{
-		NetUtil::read(this, 1);
-
-		return NetUtil.ubyte(NetUtil::read(this, 1)[0]);
+		boost::shared_ptr<ByteBuffer> buffer=NetUtil::read(this, 1);
+		return (*buffer)[0];
 	}
 	else if(sizeFieldLength==2)
 	{
-		return ByteBuffer.wrap(NetUtil::read(this, 2)).getShort();
+		boost::shared_ptr<ByteBuffer> buffer=NetUtil::read(this, 2);
+
+		uchar* data=(uchar*)buffer->getData();
+
+		//Convert read bytes into ushort using the union
+		for(uint i=0; i<2; i++)
+			convArr[i]=data[i];
+
+		convS=ntohs(convS);
+
+		return convS;
 	}
 	else
 	{
-		return ByteBuffer.wrap(NetUtil::read(this, 4)).getInt();
+		boost::shared_ptr<ByteBuffer> buffer=NetUtil::read(this, 4);
+
+		uchar* data=(uchar*)buffer->getData();
+
+		//Convert read bytes into uint using the union
+		for(uint i=0; i<4; i++)
+			convArr[i]=data[i];
+
+		convI=ntohl(convI);
+
+		return convI;
 	}
 }
 
-asio::mutable_buffers_1 FrameInputStream::readFrame()
+boost::shared_ptr<ByteBuffer> FrameInputStream::readFrame()
 {
-	//
+	uint frameSize=readFrameSize();
+
+	return NetUtil::read(this, frameSize);
 }
-*/
+

@@ -95,7 +95,7 @@ class AsioInputStream: public InputStream
 	 *
 	 * throws IOException
 	 */
-	int read(asio::mutable_buffers_1& buffer);
+	int read(ByteBuffer& buffer);
 
 	/**
 	 * Read one byte from this stream.
@@ -125,7 +125,7 @@ class AsioOutputStream: public OutputStream
 	 *
 	 * throws IOException
 	 */
-	void write(asio::mutable_buffers_1& buffer);
+	void write(ByteBuffer& buffer);
 
 	/**
 	 * Write one byte to this output stream.

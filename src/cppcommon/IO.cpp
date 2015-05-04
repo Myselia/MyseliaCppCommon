@@ -40,11 +40,12 @@ AsioInputStream::AsioInputStream(Socket* socket): socket(socket)
 	//Do nothing
 }
 
-int AsioInputStream::read(asio::mutable_buffers_1& buffer)
+int AsioInputStream::read(ByteBuffer& buffer)
 {
 	try
 	{
-		future<size_t> future=async_read(*(socket->getAsioSocket()), buffer, boost::asio::use_future);
+		asio::mutable_buffers_1 asioBuffer(buffer.getData(), buffer.getSize());
+		future<size_t> future=async_read(*(socket->getAsioSocket()), asioBuffer, boost::asio::use_future);
 
 		size_t bytesRead=future.get();
 		return bytesRead;
@@ -60,13 +61,12 @@ int AsioInputStream::read(asio::mutable_buffers_1& buffer)
 
 int AsioInputStream::read()
 {
-	char cbuf[1];
-	asio::mutable_buffers_1 buffer(cbuf, sizeof(cbuf));
+	ByteBuffer buffer(1);
 
 	if(read(buffer)==-1)
 		return -1;
 
-	uchar val=cbuf[0];
+	uchar val=buffer[0];
 
 	return val;
 }
@@ -77,11 +77,12 @@ AsioOutputStream::AsioOutputStream(Socket* socket): socket(socket)
 	//Do nothing
 }
 
-void AsioOutputStream::write(asio::mutable_buffers_1& buffer)
+void AsioOutputStream::write(ByteBuffer& buffer)
 {
 	try
 	{
-		future<size_t> future=async_write(*socket->getAsioSocket(), buffer, boost::asio::use_future);
+		asio::mutable_buffers_1 asioBuffer(buffer.getData(), buffer.getSize());
+		future<size_t> future=async_write(*socket->getAsioSocket(), asioBuffer, boost::asio::use_future);
 
 		//Wait till the operation is done
 		future.get();
@@ -94,10 +95,8 @@ void AsioOutputStream::write(asio::mutable_buffers_1& buffer)
 
 void AsioOutputStream::write(uchar val)
 {
-	char cbuf[1];
-	cbuf[0]=val;
-
-	asio::mutable_buffers_1 buffer(cbuf, sizeof(cbuf));
+	ByteBuffer buffer(1);
+	buffer[0]=val;
 
 	write(buffer);
 }
