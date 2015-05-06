@@ -18,6 +18,8 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 
+using namespace std;
+
 namespace com
 {
 namespace myselia
@@ -37,6 +39,11 @@ class ByteBuffer
 	 * Creates a copy of the provided buffer.
 	 */
 	ByteBuffer(const ByteBuffer& buffer);
+
+	/**
+	 * Creates a buffer with the same length and value as the string.
+	 */
+	ByteBuffer(string str);
 
 	~ByteBuffer();
 

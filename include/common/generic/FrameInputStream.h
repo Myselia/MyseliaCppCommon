@@ -23,11 +23,12 @@ class FrameInputStream: public FilterInputStream
 	FrameInputStream(boost::shared_ptr<InputStream> fin);
 	FrameInputStream(boost::shared_ptr<InputStream> fin, uint sizeFieldLength);
 
-	uint readFrameSize();
 	boost::shared_ptr<ByteBuffer> readFrame();
 
 	private:
 	uint sizeFieldLength;
+
+	uint readFrameSize();
 };
 
 }

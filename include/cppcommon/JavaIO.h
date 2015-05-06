@@ -72,6 +72,18 @@ class FilterInputStream: public InputStream
 	boost::shared_ptr<InputStream> in;
 };
 
+class FilterOutputStream: public OutputStream
+{
+	public:
+	FilterOutputStream(boost::shared_ptr<OutputStream> out);
+
+	void write(ByteBuffer& buffer);
+	void write(uchar val);
+
+	private:
+	boost::shared_ptr<OutputStream> out;
+};
+
 }
 }
 }

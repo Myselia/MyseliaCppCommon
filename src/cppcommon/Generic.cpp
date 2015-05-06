@@ -18,6 +18,12 @@ ByteBuffer::ByteBuffer(const ByteBuffer& buffer): size(buffer.size)
 		data[i]=buffer.data[i];
 }
 
+ByteBuffer::ByteBuffer(string str): ByteBuffer(str.length())
+{
+	for(size_t i=0; i<size; i++)
+		data[i]=str[i];
+}
+
 ByteBuffer::~ByteBuffer()
 {
 	delete data;

@@ -1,8 +1,11 @@
 #include "include/cppcommon/IO.h"
+#include "include/common/generic/FrameInputStream.h"
+#include "include/common/generic/FrameOutputStream.h"
 
 using namespace std;
 using namespace boost;
 using namespace com::myselia::cppcommon;
+using namespace com::myselia::common::generic;
 
 void connectionHandler(boost::shared_ptr<Socket> socket);
 
@@ -26,14 +29,14 @@ void connectionHandler(boost::shared_ptr<Socket> socket)
 	char val;
 	boost::shared_ptr<InputStream> is=socket->getInputStream();
 	boost::shared_ptr<OutputStream> os=socket->getOutputStream();
+	FrameInputStream fis(is);
+	FrameOutputStream fos(os);
 
-	while(true)
-	{
-		if((val=is->read())==-1)
-			break;
+	string msg="";
 
-		cout << val;
+	for(uint i=0; i<16909060; i++)
+		msg+='F';
 
-		os->write(val);
-	}
+	ByteBuffer buffer(msg);
+	fos.writeFrame(buffer);
 }
