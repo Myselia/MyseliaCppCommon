@@ -1,16 +1,20 @@
 #include "include/cppcommon/IO.h"
-#include "include/common/generic/FrameInputStream.h"
-#include "include/common/generic/FrameOutputStream.h"
+#include "include/common/framework/communication/TransmissionInputStream.h"
+#include "include/common/framework/communication/TransmissionOutputStream.h"
 
 using namespace std;
 using namespace boost;
 using namespace com::myselia::cppcommon;
 using namespace com::myselia::common::generic;
+using namespace com::myselia::common::framework::communication;
 
 void connectionHandler(boost::shared_ptr<Socket> socket);
 
 int main(int argc, char** argv)
 {
+	TransmissionOutputStream* e;
+	TransmissionInputStream* i;
+
 	ServerSocket serverSocket(7000);
 	boost::shared_ptr<Socket> socket;
 

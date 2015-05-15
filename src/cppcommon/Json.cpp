@@ -35,6 +35,11 @@ JsonElement::JsonElementType JsonElement::getJsonElementType()
 	return type;
 }
 
+string JsonElement::toJsonString()
+{
+	return Json::serialize(boost::shared_ptr<JsonElement>(this));
+}
+
 //-------------------JsonNull-------------------
 
 JsonNull::JsonNull() :
@@ -182,11 +187,6 @@ unordered_map<string, boost::shared_ptr<JsonElement>>::iterator JsonObject::end(
 }
 
 //-------------------Json-------------------
-Json::Json()
-{
-	//Do nothing
-}
-
 boost::shared_ptr<JsonElement> Json::parse(string jsonString)
 {
 	int position=0;

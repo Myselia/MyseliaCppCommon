@@ -39,6 +39,11 @@ size_t ByteBuffer::getSize()
 	return size;
 }
 
+string ByteBuffer::getAsString()
+{
+	return string((char*)data);
+}
+
 uchar& ByteBuffer::operator[](size_t position)
 {
 	if(position>size-1)

@@ -52,6 +52,8 @@ class ByteBuffer
 
 	uchar& operator[](size_t position);
 
+	string getAsString();
+
 	private:
 	uchar* data;
 	size_t size;

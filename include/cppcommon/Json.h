@@ -51,6 +51,7 @@ class JsonElement
 	bool isJsonObject();
 
 	JsonElementType getJsonElementType();
+	string toJsonString();
 
 	protected:
 	JsonElement(JsonElementType type);
@@ -129,32 +130,30 @@ class JsonObject: public JsonElement
 class Json
 {
 	public:
-	Json();
-
-	boost::shared_ptr<JsonElement> parse(string jsonString);
-	string serialize(const boost::shared_ptr<JsonElement>& element);
+	static boost::shared_ptr<JsonElement> parse(string jsonString);
+	static string serialize(const boost::shared_ptr<JsonElement>& element);
 
 	private:
-	boost::shared_ptr<JsonElement> parse(string jsonString, int& position);
-	boost::shared_ptr<JsonObject> parseObject(string jsonString, int& position);
-	boost::shared_ptr<JsonArray> parseArray(string jsonString, int& position);
-	boost::shared_ptr<JsonPrimitive> parsePrimitive(string jsonString, int& position);
-	boost::shared_ptr<JsonNull> parseNull(string jsonString, int& position);
-	void skipSpaces(string jsonString, int& position);
-	char read(string jsonString, int position);
-	bool checkEqual(string jsonString, int position, string needle);
+	static boost::shared_ptr<JsonElement> parse(string jsonString, int& position);
+	static boost::shared_ptr<JsonObject> parseObject(string jsonString, int& position);
+	static boost::shared_ptr<JsonArray> parseArray(string jsonString, int& position);
+	static boost::shared_ptr<JsonPrimitive> parsePrimitive(string jsonString, int& position);
+	static boost::shared_ptr<JsonNull> parseNull(string jsonString, int& position);
+	static void skipSpaces(string jsonString, int& position);
+	static char read(string jsonString, int position);
+	static bool checkEqual(string jsonString, int position, string needle);
 
 	/**
 	 * Parse a C string without the delimiters.
 	 * This method keeps reading until it hits stopChar.
 	 */
-	string parseCString(string jsonString, int& position, char stopChar);
-	string escapeQuotes(string str);
+	static string parseCString(string jsonString, int& position, char stopChar);
+	static string escapeQuotes(string str);
 
-	string serializeObject(const boost::shared_ptr<JsonObject>& object);
-	string serializeArray(const boost::shared_ptr<JsonArray>& array);
-	string serializePrimitive(const boost::shared_ptr<JsonPrimitive>& primitive);
-	string serializeNull(const boost::shared_ptr<JsonNull>& null);
+	static string serializeObject(const boost::shared_ptr<JsonObject>& object);
+	static string serializeArray(const boost::shared_ptr<JsonArray>& array);
+	static string serializePrimitive(const boost::shared_ptr<JsonPrimitive>& primitive);
+	static string serializeNull(const boost::shared_ptr<JsonNull>& null);
 };
 
 }
