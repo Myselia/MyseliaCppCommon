@@ -12,9 +12,6 @@ void connectionHandler(boost::shared_ptr<Socket> socket);
 
 int main(int argc, char** argv)
 {
-	TransmissionOutputStream* e;
-	TransmissionInputStream* i;
-
 	ServerSocket serverSocket(7000);
 	boost::shared_ptr<Socket> socket;
 
@@ -33,14 +30,10 @@ void connectionHandler(boost::shared_ptr<Socket> socket)
 	char val;
 	boost::shared_ptr<InputStream> is=socket->getInputStream();
 	boost::shared_ptr<OutputStream> os=socket->getOutputStream();
-	FrameInputStream fis(is);
-	FrameOutputStream fos(os);
+	//TransmissionInputStream tis(is);
+	TransmissionOutputStream tos(os);
 
-	string msg="";
+	boost::shared_ptr<Transmission> transmission(new Transmission(42, "nic1", "nic2"));
 
-	for(uint i=0; i<16909060; i++)
-		msg+='F';
-
-	ByteBuffer buffer(msg);
-	fos.writeFrame(buffer);
+	tos.writeTransmission(transmission);
 }

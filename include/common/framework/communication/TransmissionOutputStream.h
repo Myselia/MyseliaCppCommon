@@ -34,7 +34,7 @@ class TransmissionOutputStream: public FrameOutputStream
 		string jsonString=JsonTranslator::transmissionToJson(transmission)->toJsonString();
 		ByteBuffer buf(jsonString);
 
-		write(buf);
+		writeFrame(buf);
 	}
 
 	private:

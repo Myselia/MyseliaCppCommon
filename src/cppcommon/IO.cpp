@@ -35,7 +35,7 @@ void IoService::serviceHandlerThread()
 }
 
 //AsioInputStream
-AsioInputStream::AsioInputStream(Socket* socket): socket(socket)
+AsioInputStream::AsioInputStream(boost::shared_ptr<Socket> socket): socket(socket)
 {
 	//Do nothing
 }
@@ -72,7 +72,7 @@ int AsioInputStream::read()
 }
 
 //AsioOutputStream
-AsioOutputStream::AsioOutputStream(Socket* socket): socket(socket)
+AsioOutputStream::AsioOutputStream(boost::shared_ptr<Socket> socket): socket(socket)
 {
 	//Do nothing
 }
@@ -84,8 +84,11 @@ void AsioOutputStream::write(ByteBuffer& buffer)
 		asio::mutable_buffers_1 asioBuffer(buffer.getData(), buffer.getSize());
 		future<size_t> future=async_write(*socket->getAsioSocket(), asioBuffer, boost::asio::use_future);
 
+		cout << "AsioOutputStream.write() 1 " << &(*socket->getAsioSocket()) << endl;
+
 		//Wait till the operation is done
 		future.get();
+		cout << "AsioOutputStream.write() 2" << endl;
 	}
 	catch(system::system_error& error)
 	{
@@ -128,14 +131,19 @@ boost::shared_ptr<asio_socket> Socket::getAsioSocket()
 	return socket;
 }
 
+boost::shared_ptr<Socket> Socket::getSocket()
+{
+	return shared_from_this();
+}
+
 boost::shared_ptr<InputStream> Socket::getInputStream()
 {
-	return boost::shared_ptr<InputStream>(new AsioInputStream(this));
+	return boost::shared_ptr<InputStream>(new AsioInputStream(getSocket()));
 }
 
 boost::shared_ptr<OutputStream> Socket::getOutputStream()
 {
-	return boost::shared_ptr<OutputStream>(new AsioOutputStream(this));
+	return boost::shared_ptr<OutputStream>(new AsioOutputStream(getSocket()));
 }
 
 //ServerSocket

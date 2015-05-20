@@ -87,7 +87,7 @@ class Socket;
 class AsioInputStream: public InputStream
 {
 	public:
-	AsioInputStream(Socket* socket);
+	AsioInputStream(boost::shared_ptr<Socket> socket);
 
 	/**
 	 * Read from this stream, this will attempt to fill the buffer with data.
@@ -108,7 +108,7 @@ class AsioInputStream: public InputStream
 	int read();
 
 	private:
-	Socket* socket;
+	boost::shared_ptr<Socket> socket;
 };
 
 /**
@@ -118,7 +118,7 @@ class AsioInputStream: public InputStream
 class AsioOutputStream: public OutputStream
 {
 	public:
-	AsioOutputStream(Socket* socket);
+	AsioOutputStream(boost::shared_ptr<Socket> socket);
 
 	/**
 	 * Write then entire buffer to this output stream.
@@ -135,14 +135,14 @@ class AsioOutputStream: public OutputStream
 	void write(uchar val);
 
 	private:
-	Socket* socket;
+	boost::shared_ptr<Socket> socket;
 };
 
 /**
  * This class imitates the java class of the same name but uses boost::asio underneath.
  * This class is thread safe.
  */
-class Socket
+class Socket: public boost::enable_shared_from_this<Socket>
 {
 	public:
 	Socket(boost::shared_ptr<asio_socket> socket);
@@ -151,6 +151,8 @@ class Socket
 	boost::shared_ptr<asio_socket> getAsioSocket();
 	boost::shared_ptr<InputStream> getInputStream();
 	boost::shared_ptr<OutputStream> getOutputStream();
+
+	boost::shared_ptr<Socket> getSocket();
 
 	private:
 	boost::shared_ptr<asio_socket> socket;
