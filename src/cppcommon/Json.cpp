@@ -37,7 +37,7 @@ JsonElement::JsonElementType JsonElement::getJsonElementType()
 
 string JsonElement::toJsonString()
 {
-	return Json::serialize(boost::shared_ptr<JsonElement>(this));
+	return Json::serialize(shared_from_this());
 }
 
 //-------------------JsonNull-------------------

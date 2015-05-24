@@ -152,7 +152,7 @@ class Socket: public boost::enable_shared_from_this<Socket>
 	boost::shared_ptr<InputStream> getInputStream();
 	boost::shared_ptr<OutputStream> getOutputStream();
 
-	boost::shared_ptr<Socket> getSocket();
+	boost::shared_ptr<Socket> getThisSocket();
 
 	private:
 	boost::shared_ptr<asio_socket> socket;

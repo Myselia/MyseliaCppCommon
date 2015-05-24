@@ -3,6 +3,7 @@
 
 #include <boost/variant/variant.hpp>
 #include <boost/variant/get.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 #include "../cppcommon/Exception.h"
 #include "../cppcommon/Generic.h"
@@ -37,7 +38,9 @@ class JsonParseException: public GenericException
 	}
 };
 
-class JsonElement
+class JsonElement;
+
+class JsonElement: public boost::enable_shared_from_this<JsonElement>
 {
 	public:
 	enum JsonElementType
