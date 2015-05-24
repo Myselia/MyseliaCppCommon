@@ -66,6 +66,7 @@ class ByteBuffer
 
 class GenericUtil
 {
+	public:
 	static char getSecondLastDigit(int num);
 	static void printScale(int len);
 };

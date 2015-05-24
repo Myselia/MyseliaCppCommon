@@ -1,6 +1,7 @@
 #include "include/cppcommon/IO.h"
 #include "include/common/framework/communication/TransmissionInputStream.h"
 #include "include/common/framework/communication/TransmissionOutputStream.h"
+#include "include/common/generic/FrameOutputStream.h"
 
 using namespace std;
 using namespace boost;
@@ -27,13 +28,17 @@ int main(int argc, char** argv)
 
 void connectionHandler(boost::shared_ptr<Socket> socket)
 {
-	char val;
 	boost::shared_ptr<InputStream> is=socket->getInputStream();
 	boost::shared_ptr<OutputStream> os=socket->getOutputStream();
-	//TransmissionInputStream tis(is);
+	boost::shared_ptr<FrameOutputStream> fos(new FrameOutputStream(os));
+	TransmissionInputStream tis(is);
 	TransmissionOutputStream tos(os);
 
 	boost::shared_ptr<Transmission> transmission(new Transmission(42, "nic1", "nic2"));
 
 	tos.writeTransmission(transmission);
+
+	boost::shared_ptr<Transmission> transmission2=tis.readTransmission();
+	string t2Json=JsonTranslator::transmissionToJson(transmission2)->toJsonString();
+	cout << t2Json << endl;
 }

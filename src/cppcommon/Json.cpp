@@ -243,12 +243,11 @@ char Json::read(string jsonString, int position)
 
 bool Json::checkEqual(string jsonString, int position, string needle)
 {
-	string str="";
-
 	for(int i=0; i<needle.length(); i++)
-		str+=read(jsonString, position+i);
+		if(read(jsonString, position+i)!=needle[i])
+			return false;
 
-	return needle==str;
+	return true;
 }
 
 string Json::parseCString(string jsonString, int& position, char stopChar)
@@ -332,7 +331,7 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 			skipSpaces(jsonString, position);
 
 			//Parse key
-			if( !checkEqual(jsonString, position, "\""))
+			if(!checkEqual(jsonString, position, "\""))
 				throw JsonParseException("Expected object key (string starting with '\"') at position "+to_string(position));
 
 			position++;
@@ -342,14 +341,14 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 			//Parse value
 			skipSpaces(jsonString, position);
 
-			if( !checkEqual(jsonString, position, ":"))
+			if(!checkEqual(jsonString, position, ":"))
 				throw JsonParseException("Expected ':' at position "+to_string(position));
 			position++;
 
 			boost::shared_ptr<JsonElement> value=parse(jsonString, position);
 
 			//Add property to object
-			( *object)[key]=value;
+			(*object)[key]=value;
 
 			skipSpaces(jsonString, position);
 
