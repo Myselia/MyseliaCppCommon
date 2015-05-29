@@ -1,7 +1,7 @@
-#include "include/cppcommon/IO.h"
-#include "include/common/framework/communication/TransmissionInputStream.h"
-#include "include/common/framework/communication/TransmissionOutputStream.h"
-#include "include/common/generic/FrameOutputStream.h"
+#include <cppcommon/IO.h>
+#include <common/framework/communication/TransmissionInputStream.h>
+#include <common/framework/communication/TransmissionOutputStream.h>
+#include <common/generic/FrameOutputStream.h>
 
 using namespace std;
 using namespace boost;

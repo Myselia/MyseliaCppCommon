@@ -1,4 +1,4 @@
-#include "../../../include/common/generic/FrameOutputStream.h"
+#include <common/generic/FrameOutputStream.h>
 
 using namespace com::myselia::common::generic;
 

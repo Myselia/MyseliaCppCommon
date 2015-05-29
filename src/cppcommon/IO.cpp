@@ -1,4 +1,4 @@
-#include "../../include/cppcommon/IO.h"
+#include <cppcommon/IO.h>
 
 using namespace std;
 using namespace com::myselia::cppcommon;

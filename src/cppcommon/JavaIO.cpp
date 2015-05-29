@@ -1,4 +1,4 @@
-#include "../../include/cppcommon/JavaIO.h"
+#include <cppcommon/JavaIO.h>
 
 using namespace com::myselia::cppcommon;
 

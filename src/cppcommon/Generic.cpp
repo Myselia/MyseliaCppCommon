@@ -1,5 +1,5 @@
-#include "../../include/cppcommon/Generic.h"
-#include "../../include/cppcommon/Exception.h"
+#include <cppcommon/Generic.h>
+#include <cppcommon/Exception.h>
 
 using namespace std;
 using namespace com::myselia::cppcommon;

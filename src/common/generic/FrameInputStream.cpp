@@ -1,4 +1,4 @@
-#include "../../../include/common/generic/FrameInputStream.h"
+#include <common/generic/FrameInputStream.h>
 
 using namespace com::myselia::common::generic;
 
