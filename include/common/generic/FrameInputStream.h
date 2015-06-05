@@ -2,8 +2,8 @@
 #define INCLUDE_COMMON_GENERIC_FRAMEINPUTSTREAM_H_
 
 #include <arpa/inet.h>
-#include "../../../include/cppcommon/IO.h"
-#include "../../../include/common/generic/NetUtil.h"
+#include <cppcommon/IO.h>
+#include <common/generic/NetUtil.h>
 
 using namespace boost;
 using namespace com::myselia::cppcommon;

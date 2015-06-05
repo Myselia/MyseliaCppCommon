@@ -12,7 +12,7 @@
 #include <boost/asio/use_future.hpp>
 #include <boost/thread.hpp>
 
-#include "../../include/cppcommon/JavaIO.h"
+#include <cppcommon/JavaIO.h>
 
 using namespace boost;
 

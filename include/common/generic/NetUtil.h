@@ -1,7 +1,7 @@
 #ifndef INCLUDE_COMMON_GENERIC_NETUTIL_H_
 #define INCLUDE_COMMON_GENERIC_NETUTIL_H_
 
-#include "../../../include/cppcommon/JavaIO.h"
+#include <cppcommon/JavaIO.h>
 
 using namespace com::myselia::cppcommon;
 

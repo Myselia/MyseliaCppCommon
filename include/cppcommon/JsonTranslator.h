@@ -1,8 +1,8 @@
 #ifndef INCLUDE_CPPCOMMON_JSONTRANSLATOR_H_
 #define INCLUDE_CPPCOMMON_JSONTRANSLATOR_H_
 
-#include "../cppcommon/Json.h"
-#include "../common/communication/units/Transmission.h"
+#include <cppcommon/Json.h>
+#include <common/communication/units/Transmission.h>
 
 using namespace com::myselia::cppcommon;
 using namespace com::myselia::common::communication::units;

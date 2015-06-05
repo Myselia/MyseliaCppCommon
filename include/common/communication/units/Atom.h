@@ -1,7 +1,7 @@
 #ifndef INCLUDE_COMMON_COMMUNICATION_UNITS_ATOM_H_
 #define INCLUDE_COMMON_COMMUNICATION_UNITS_ATOM_H_
 
-#include "../../../cppcommon/Generic.h"
+#include <cppcommon/Generic.h>
 
 using namespace boost;
 using namespace com::myselia::cppcommon;

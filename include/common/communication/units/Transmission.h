@@ -1,8 +1,8 @@
 #ifndef INCLUDE_COMMON_COMMUNICATION_UNITS_TRANSMISSION_H_
 #define INCLUDE_COMMON_COMMUNICATION_UNITS_TRANSMISSION_H_
 
-#include "../../../common/communication/units/Atom.h"
-#include "../../../common/communication/units/Header.h"
+#include <common/communication/units/Atom.h>
+#include <common/communication/units/Header.h>
 
 using namespace boost;
 using namespace com::myselia::cppcommon;

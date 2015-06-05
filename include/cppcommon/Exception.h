@@ -3,7 +3,7 @@
 
 #include <exception>
 
-#include "../cppcommon/Generic.h"
+#include <cppcommon/Generic.h>
 
 using namespace std;
 

@@ -1,9 +1,9 @@
 #ifndef INCLUDE_COMMON_FRAMEWORK_COMMUNICATION_TRANSMISSIONOUTPUTSTREAM_H_
 #define INCLUDE_COMMON_FRAMEWORK_COMMUNICATION_TRANSMISSIONOUTPUTSTREAM_H_
 
-#include "../../../common/generic/FrameOutputStream.h"
-#include "../../../common/communication/units/Transmission.h"
-#include "../../../cppcommon/JsonTranslator.h"
+#include <common/generic/FrameOutputStream.h>
+#include <common/communication/units/Transmission.h>
+#include <cppcommon/JsonTranslator.h>
 
 using namespace boost;
 using namespace com::myselia::cppcommon;
