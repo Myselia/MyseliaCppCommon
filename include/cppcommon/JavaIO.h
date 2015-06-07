@@ -60,6 +60,15 @@ class OutputStream
 	virtual void write(uchar val) = 0;
 };
 
+class Channel
+{
+	public:
+	virtual ~Channel() {};
+
+	virtual boost::shared_ptr<InputStream> getInputStream() = 0;
+	virtual boost::shared_ptr<OutputStream> getOutputStream() = 0;
+};
+
 class FilterInputStream: public InputStream
 {
 	public:

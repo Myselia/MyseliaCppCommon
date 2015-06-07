@@ -142,7 +142,7 @@ class AsioOutputStream: public OutputStream
  * This class imitates the java class of the same name but uses boost::asio underneath.
  * This class is thread safe.
  */
-class Socket: public boost::enable_shared_from_this<Socket>
+class Socket: public Channel, public boost::enable_shared_from_this<Socket>
 {
 	public:
 	Socket(boost::shared_ptr<asio_socket> socket);
