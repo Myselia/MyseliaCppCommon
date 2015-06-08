@@ -2,8 +2,7 @@
 #include <common/framework/communication/TransmissionInputStream.h>
 #include <common/framework/communication/TransmissionOutputStream.h>
 #include <common/generic/FrameOutputStream.h>
-#include <cppcommon/MessageService.h>
-#include <cppcommon/TransmissionMessageService.h>
+#include <cppcommon/TransmissionService.h>
 
 using namespace std;
 using namespace boost;
@@ -16,7 +15,6 @@ void connectionHandler(boost::shared_ptr<Socket> socket);
 int main(int argc, char** argv)
 {
 	boost::shared_ptr<Transmission> transmission=boost::shared_ptr<Transmission>(new Transmission());
-	TransmissionMessage tm(transmission);
 
 	/*
 	ServerSocket serverSocket(7000);
