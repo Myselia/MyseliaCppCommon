@@ -34,43 +34,6 @@ void IoService::serviceHandlerThread()
 	io_service.run();
 }
 
-//AsioInputStream
-AsioInputStream::AsioInputStream(boost::shared_ptr<Socket> socket): socket(socket)
-{
-	//Do nothing
-}
-
-int AsioInputStream::read(ByteBuffer& buffer)
-{
-	try
-	{
-		asio::mutable_buffers_1 asioBuffer(buffer.getData(), buffer.getSize());
-		future<size_t> future=async_read(*(socket->getAsioSocket()), asioBuffer, boost::asio::use_future);
-
-		size_t bytesRead=future.get();
-		return bytesRead;
-	}
-	catch(system::system_error& error)
-	{
-		if(error.code()==asio::error::eof)
-			return -1;
-		else
-			throw IOException(error.code());
-	}
-}
-
-int AsioInputStream::read()
-{
-	ByteBuffer buffer(1);
-
-	if(read(buffer)==-1)
-		return -1;
-
-	uchar val=buffer[0];
-
-	return val;
-}
-
 //AsioOutputStream
 AsioOutputStream::AsioOutputStream(boost::shared_ptr<Socket> socket): socket(socket)
 {

@@ -5,7 +5,7 @@
  * Classes from java.io.* package that can be implemented in C++ without heavily depending on an external library.
  */
 
-#include <cppcommon/Exception.h>
+#include <cppcommon/Generic.h>
 
 using namespace com::myselia::cppcommon;
 

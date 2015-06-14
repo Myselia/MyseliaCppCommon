@@ -1,7 +1,7 @@
 #ifndef INCLUDE_CPPCOMMON_OPCODE_H_
 #define INCLUDE_CPPCOMMON_OPCODE_H_
 
-#include <cppcommon/Exception.h>
+#include <cppcommon/Generic.h>
 
 using namespace std;
 using namespace boost;
