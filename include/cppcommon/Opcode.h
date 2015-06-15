@@ -32,7 +32,7 @@ class ComponentType
 		else if(str==SANDBOX_SLAVE.getValue())
 			return SANDBOX_SLAVE;
 		else
-			throw IllegalArgumentException("Invalid string: \""+str+"\"");
+			throw IllegalArgumentException("ComponentType.fromString(): Invalid string: \""+str+"\"");
 	}
 
 	string getValue() const
@@ -75,7 +75,7 @@ class ActionType
 		else if(str==DATA.getValue())
 			return DATA;
 		else
-			throw IllegalArgumentException("Invalid string: \""+str+"\"");
+			throw IllegalArgumentException("ActionType.fromString(): Invalid string: \""+str+"\"");
 	}
 
 	string getValue() const
@@ -111,10 +111,10 @@ class Opcode
 	{
 		vector<string> tokens;
 
-		GenericUtil::tokenize(str, tokens, ""+delimiter);
+		GenericUtil::tokenize(str, tokens, delimiter);
 
 		if(tokens.size()!=3)
-			throw IllegalArgumentException("Invalid string: \""+str+"\"");
+			throw IllegalArgumentException("Opcode.fromString(): Invalid string: \""+str+"\" (tokens.size(): "+to_string(tokens.size())+")");
 
 		return Opcode(ComponentType::fromString(tokens[0]), ActionType::fromString(tokens[1]), tokens[2]);
 	}

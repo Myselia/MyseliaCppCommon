@@ -24,7 +24,7 @@ class NetUtil
 		int read=fin->read(*buffer);
 
 		if(read==-1)
-			throw new IOException("Could not read enough bytes: end of stream.");
+			throw IOException("Could not read enough bytes: end of stream.");
 
 		return buffer;
 	}

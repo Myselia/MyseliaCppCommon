@@ -281,25 +281,47 @@ class ByteBuffer
 class GenericUtil
 {
 	public:
-	static char getSecondLastDigit(int num);
-	static void printScale(int len);
-
-	static void tokenize(const string& str, vector<string>& tokens, const string& delimiters = " ")
+	static char getSecondLastDigit(int num)
 	{
-	    // Skip delimiters at beginning.
-	    string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-	    // Find first "non-delimiter".
-	    string::size_type pos     = str.find_first_of(delimiters, lastPos);
+		string str=to_string(num);
 
-	    while (string::npos != pos || string::npos != lastPos)
+		if(str.length()==1)
+			return str[0];
+
+		return str[str.length()-2];
+	}
+
+	static void printScale(int len)
+	{
+		for(int i=0; i<len; i++)
+		{
+			if(i%10==0)
+				cout << getSecondLastDigit(i);
+			else if(i%5==0)
+				cout << "+";
+			else
+				cout << "-";
+		}
+
+		cout << endl;
+	}
+
+	static void tokenize(const string& str, vector<string>& tokens, const char delimiter = ' ')
+	{
+	    string token="";
+
+	    for(size_t i=0; i<str.length(); i++)
 	    {
-	        // Found a token, add it to the vector.
-	        tokens.push_back(str.substr(lastPos, pos - lastPos));
-	        // Skip delimiters.  Note the "not_of"
-	        lastPos = str.find_first_not_of(delimiters, pos);
-	        // Find next "non-delimiter"
-	        pos = str.find_first_of(delimiters, lastPos);
+	    	if(str[i]==delimiter)
+	    	{
+	    		tokens.push_back(token);
+	    		token="";
+	    	}
+	    	else
+	    		token+=str[i];
 	    }
+
+	    tokens.push_back(token);
 	}
 };
 

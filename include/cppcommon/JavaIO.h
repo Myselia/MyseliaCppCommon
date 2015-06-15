@@ -72,10 +72,20 @@ class Channel
 class FilterInputStream: public InputStream
 {
 	public:
-	FilterInputStream(boost::shared_ptr<InputStream> in);
+	FilterInputStream(boost::shared_ptr<InputStream> in): in(in)
+	{
+		//Do nothing
+	}
 
-	int read();
-	int read(ByteBuffer& buffer);
+	int read()
+	{
+		return in->read();
+	}
+
+	int read(ByteBuffer& buffer)
+	{
+		return in->read(buffer);
+	}
 
 	private:
 	boost::shared_ptr<InputStream> in;
@@ -84,10 +94,20 @@ class FilterInputStream: public InputStream
 class FilterOutputStream: public OutputStream
 {
 	public:
-	FilterOutputStream(boost::shared_ptr<OutputStream> out);
+	FilterOutputStream(boost::shared_ptr<OutputStream> out): out(out)
+	{
+		//Do nothing
+	}
 
-	void write(ByteBuffer& buffer);
-	void write(uchar val);
+	void write(ByteBuffer& buffer)
+	{
+		out->write(buffer);
+	}
+
+	void write(uchar val)
+	{
+		out->write(val);
+	}
 
 	private:
 	boost::shared_ptr<OutputStream> out;

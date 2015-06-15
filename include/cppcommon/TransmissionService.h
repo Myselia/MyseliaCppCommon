@@ -70,10 +70,10 @@ class Destination
 	{
 		vector<string> tokens;
 
-		GenericUtil::tokenize(str, tokens, ""+delimiter);
+		GenericUtil::tokenize(str, tokens, delimiter);
 
 		if(tokens.size()!=2)
-			throw IllegalArgumentException("Invalid string: \""+str+"\"");
+			throw IllegalArgumentException("Destination.fromString(): Invalid string: \""+str+"\" (tokens.size(): "+to_string(tokens.size())+")");
 
 		return Destination(tokens[0], Opcode::fromString(tokens[1]));
 	}
@@ -132,6 +132,12 @@ class BasicTransmissionService: public TransmissionService
 		//Do nothing
 	}
 
+	~BasicTransmissionService()
+	{
+		channelHandlers.interrupt_all();
+		channelHandlers.join_all();
+	}
+
 	void addChannel(boost::shared_ptr<Channel> channel)
 	{
 		boost::shared_ptr<TransmissionChannel> transmissionChannel=boost::shared_ptr<TransmissionChannel>(new TransmissionChannel(channel));
@@ -139,16 +145,37 @@ class BasicTransmissionService: public TransmissionService
 		channelsMutex.lock();
 		channels.insert(transmissionChannel);
 		channelsMutex.unlock();
+
+
+		boost::thread* thread=new boost::thread(boost::bind(&BasicTransmissionService::handleChannel, this, transmissionChannel));
+		channelHandlers.add_thread(thread);
 	}
 
 	void send(Destination destination, boost::shared_ptr<Transmission> transmission)
 	{
-		//TODO
+		/*
+		 * Here you would normally use routing to determine through which channel
+		 * to send the Transmission. The current implementation just sends it to all channels.
+		 */
+
+		channelsMutex.lock();
+
+		boost::shared_ptr<TransmissionOutputStream> tos;
+
+		for(boost::shared_ptr<TransmissionChannel> channel: channels)
+		{
+			tos=channel->getTransmissionOutputStream();
+			tos->writeTransmission(transmission);
+		}
+
+		channelsMutex.unlock();
 	}
 
 	void addListener(Opcode opcode, TransmissionListener listener)
 	{
+		listenersMutex.lock();
 		listeners[opcode]=listener;
+		listenersMutex.unlock();
 	}
 
 	private:
@@ -156,7 +183,77 @@ class BasicTransmissionService: public TransmissionService
 	std::set<boost::shared_ptr<TransmissionChannel>> channels;
 	boost::mutex channelsMutex;
 	std::set<int> receivedTransmissions;
+	boost::mutex receivedTransmissionsMutex;
 	std::unordered_map<Opcode, TransmissionListener> listeners;
+	boost::mutex listenersMutex;
+	boost::thread_group channelHandlers;
+
+	void handleChannel(boost::shared_ptr<TransmissionChannel> transmissionChannel)
+	{
+		boost::shared_ptr<TransmissionInputStream> tis=transmissionChannel->getTransmissionInputStream();
+		boost::shared_ptr<Transmission> transmission;
+
+		while(true)
+		{
+			try
+			{
+				transmission=tis->readTransmission();
+			}
+			catch(IOException& e)
+			{
+				channelsMutex.lock();
+				channels.erase(transmissionChannel);
+				channelsMutex.unlock();
+				return;
+			}
+			catch(boost::thread_interrupted& e)
+			{
+				return;
+			}
+
+			receivedTransmissionsMutex.lock();
+			//If we already received that Transmission
+			if(receivedTransmissions.find(transmission->get_header()->get_id())!=receivedTransmissions.end())
+			{
+				receivedTransmissionsMutex.unlock();
+				continue;
+			}
+
+			receivedTransmissions.insert(transmission->get_header()->get_id());
+			receivedTransmissionsMutex.unlock();
+
+			try
+			{
+				Destination to=Destination::fromString(transmission->get_header()->get_to());
+
+				//If the transmission targets this component.
+				if(to.getComponentId()==componentId)
+				{
+					listenersMutex.lock();
+
+					//If there is a listener that listens for this opcode.
+					if(listeners.find(to.getOpcode())!=listeners.end())
+					{
+						//Call listener
+						TransmissionListener listener=listeners[to.getOpcode()];
+						listener(transmission);
+					}
+
+					listenersMutex.unlock();
+				}
+				else
+				{
+					//The transmission does not target this component. Send the transmission to the corresponding channel.
+					send(to, transmission);
+				}
+			}
+			catch(GenericException& e)
+			{
+				cout << "BasicTransmissionService: error parsing Transmission destination: \""+transmission->get_header()->get_to()+"\", error: " << e.getMessage() << endl;
+				continue;
+			}
+		}
+	}
 };
 
 }
