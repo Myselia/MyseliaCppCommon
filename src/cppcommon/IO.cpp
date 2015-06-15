@@ -105,36 +105,3 @@ boost::shared_ptr<OutputStream> Socket::getOutputStream()
 {
 	return boost::shared_ptr<OutputStream>(new AsioOutputStream(getThisSocket()));
 }
-
-//ServerSocket
-ServerSocket::ServerSocket(int port)
-{
-	try
-	{
-		acceptor=boost::shared_ptr<asio_acceptor>(new asio_acceptor(IoService::getInstance().getBoostIoService(), asio_endpoint(boost::asio::ip::tcp::v4(), port)));
-	}
-	catch(system::system_error& error)
-	{
-		throw IOException(error.code());
-	}
-}
-
-boost::shared_ptr<Socket> ServerSocket::accept()
-{
-	try
-	{
-		boost::shared_ptr<asio_socket> socket(new asio_socket(IoService::getInstance().getBoostIoService()));
-
-		future<void> future=acceptor->async_accept(*socket, boost::asio::use_future);
-
-		//Wait till the operation is done
-		future.get();
-
-		return boost::shared_ptr<Socket>(new Socket(socket));
-	}
-	catch(system::system_error& error)
-	{
-		throw IOException(error.code());
-	}
-}
-

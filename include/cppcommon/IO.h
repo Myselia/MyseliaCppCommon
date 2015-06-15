@@ -312,12 +312,89 @@ class AsioOutputStream: public OutputStream
 class ServerSocket
 {
 	public:
-	ServerSocket(int port);
+	ServerSocket(int port): operationDone(true), WAIT_TIME(50)
+	{
+		try
+		{
+			acceptor=boost::shared_ptr<asio_acceptor>(new asio_acceptor(IoService::getInstance().getBoostIoService(), asio_endpoint(boost::asio::ip::tcp::v4(), port)));
+		}
+		catch(system::system_error& error)
+		{
+			throw IOException(error.code());
+		}
+	}
 
-	boost::shared_ptr<Socket> accept();
+	boost::shared_ptr<Socket> accept()
+	{
+		operationMutex.lock();
+
+		//If there was a successfully accepted socket before (got interrupted while accepting), return it.
+		if(asioSocket)
+		{
+			operationMutex.unlock();
+			return boost::shared_ptr<Socket>(new Socket(asioSocket));
+		}
+
+		//If there was an error last time we try to accept and got interrupted, throw the error now.
+		if(errorAccepting)
+		{
+			operationMutex.unlock();
+			throw IOException(errorAccepting);
+		}
+
+		//If there is no accept in progress start a new one. Otherwise just skip the start part and just wait for the current operation to finish.
+		if(operationDone)
+		{
+			//Start accepting a new socket.
+			asioSocket=boost::shared_ptr<asio_socket>(new asio_socket(IoService::getInstance().getBoostIoService()));
+
+			operationDone=false;
+
+			acceptor->async_accept(*asioSocket, boost::bind(&ServerSocket::acceptDone, this, asio::placeholders::error));
+		}
+
+		//Wait for operation to complete
+		try
+		{
+			while(!operationDone)
+				boost::this_thread::sleep(boost::posix_time::milliseconds(WAIT_TIME));
+		}
+		catch(boost::thread_interrupted& e)
+		{
+			operationMutex.unlock();
+			throw e;
+		}
+
+		//Check for errors and return client socket if no error.
+		if(errorAccepting)
+		{
+			operationMutex.unlock();
+			throw IOException(errorAccepting);
+		}
+		else
+		{
+			operationMutex.unlock();
+			boost::shared_ptr<Socket> socket(new Socket(asioSocket));
+
+			asioSocket.reset();
+
+			return socket;
+		}
+	}
 
 	private:
 	boost::shared_ptr<asio_acceptor> acceptor;
+	boost::shared_ptr<asio_socket> asioSocket;
+	boost::mutex operationMutex;
+	bool operationDone;
+	system::error_code errorAccepting;
+	int WAIT_TIME;
+
+	void acceptDone(const system::error_code& error)
+	{
+		operationDone=true;
+		errorAccepting=error;
+	}
 };
 
 }
