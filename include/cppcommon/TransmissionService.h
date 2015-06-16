@@ -236,10 +236,11 @@ class BasicTransmissionService: public TransmissionService
 					{
 						//Call listener
 						TransmissionListener listener=listeners[to.getOpcode()];
+
+						listenersMutex.unlock();
+
 						listener(transmission);
 					}
-
-					listenersMutex.unlock();
 				}
 				else
 				{
