@@ -25,6 +25,11 @@ class Atom
 		//Do nothing
 	}
 
+	Atom(string value): Atom("", "", value)
+	{
+		//Do nothing
+	}
+
 	string get_field()
 	{
 		return field;

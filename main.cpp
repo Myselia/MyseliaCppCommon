@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 	ServerSocket serverSocket(7000);
 	boost::shared_ptr<Socket> socket;
 	BasicTransmissionService bts(componentId);
-
+	
 	bts.addListener(opcode, handleStartSandbox);
 
 	while(true)

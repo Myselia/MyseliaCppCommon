@@ -153,6 +153,9 @@ class BasicTransmissionService: public TransmissionService
 
 	void send(Destination destination, boost::shared_ptr<Transmission> transmission)
 	{
+		transmission->setId(GenericUtil::generateRandomNumber());
+		transmission->setFrom(componentId);
+
 		/*
 		 * Here you would normally use routing to determine through which channel
 		 * to send the Transmission. The current implementation just sends it to all channels.
@@ -213,18 +216,18 @@ class BasicTransmissionService: public TransmissionService
 
 			receivedTransmissionsMutex.lock();
 			//If we already received that Transmission
-			if(receivedTransmissions.find(transmission->get_header()->get_id())!=receivedTransmissions.end())
+			if(receivedTransmissions.find(transmission->getHeader()->getId())!=receivedTransmissions.end())
 			{
 				receivedTransmissionsMutex.unlock();
 				continue;
 			}
 
-			receivedTransmissions.insert(transmission->get_header()->get_id());
+			receivedTransmissions.insert(transmission->getHeader()->getId());
 			receivedTransmissionsMutex.unlock();
 
 			try
 			{
-				Destination to=Destination::fromString(transmission->get_header()->get_to());
+				Destination to=Destination::fromString(transmission->getHeader()->getTo());
 
 				//If the transmission targets this component.
 				if(to.getComponentId()==componentId)
@@ -250,7 +253,7 @@ class BasicTransmissionService: public TransmissionService
 			}
 			catch(GenericException& e)
 			{
-				cout << "BasicTransmissionService: error parsing Transmission destination: \""+transmission->get_header()->get_to()+"\", error: " << e.getMessage() << endl;
+				cout << "BasicTransmissionService: error parsing Transmission destination: \""+transmission->getHeader()->getTo()+"\", error: " << e.getMessage() << endl;
 				continue;
 			}
 		}

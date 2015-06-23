@@ -12,8 +12,11 @@
 #include <string>
 #include <unordered_map>
 #include <exception>
+#include <limits>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/random.hpp>
+#include <boost/generator_iterator.hpp>
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -322,6 +325,42 @@ class GenericUtil
 	    }
 
 	    tokens.push_back(token);
+	}
+
+	static string executeCommand(string command)
+	{
+		FILE* pipe=popen(command.c_str(), "r");
+
+		if(!pipe)
+			return "ERROR";
+
+		char buffer[128];
+		std::string result="";
+
+		while(!feof(pipe))
+			if(fgets(buffer, 128, pipe)!=NULL)
+				result+=buffer;
+
+		pclose(pipe);
+		return result;
+	}
+
+	static int generateRandomNumber(int min, int max)
+	{
+		if(min>max)
+			throw IllegalArgumentException("min is greater than max.");
+
+		boost::mt19937 generator;
+		generator.seed(time(NULL));
+		boost::uniform_int<> range(min, max);
+		boost::variate_generator<boost::mt19937, boost::uniform_int<>> rangeGenerator(generator, range);
+
+		return rangeGenerator();
+	}
+
+	static int generateRandomNumber()
+	{
+		return generateRandomNumber(numeric_limits<int>::min(), numeric_limits<int>::max());
 	}
 };
 

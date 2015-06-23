@@ -25,17 +25,32 @@ class Header
 		//Do nothing
 	}
 
-	int get_id()
+	void setId(int id)
+	{
+		this->id=id;
+	}
+
+	void setFrom(string from)
+	{
+		this->from=from;
+	}
+
+	void setTo(string to)
+	{
+		this->to=to;
+	}
+
+	int getId()
 	{
 		return id;
 	}
 
-	string get_from()
+	string getFrom()
 	{
 		return from;
 	}
 
-	string get_to()
+	string getTo()
 	{
 		return to;
 	}

@@ -21,10 +21,10 @@ class JsonTranslator
 	{
 		boost::shared_ptr<JsonObject> jsonTransmission(new JsonObject());
 
-		(*jsonTransmission)["header"]=headerToJson(transmission->get_header());
+		(*jsonTransmission)["header"]=headerToJson(transmission->getHeader());
 
 		boost::shared_ptr<JsonArray> jsonAtoms(new JsonArray());
-		vector<boost::shared_ptr<Atom>> atoms=transmission->get_atoms();
+		vector<boost::shared_ptr<Atom>> atoms=transmission->getAtoms();
 
 		for(vector<boost::shared_ptr<Atom>>::iterator it=atoms.begin(); it!=atoms.end(); it++)
 			jsonAtoms->add(atomToJson(*it));
@@ -38,9 +38,9 @@ class JsonTranslator
 	{
 		boost::shared_ptr<JsonObject> jsonHeader(new JsonObject());
 
-		(*jsonHeader)["id"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->get_id()));
-		(*jsonHeader)["from"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->get_from()));
-		(*jsonHeader)["to"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->get_to()));
+		(*jsonHeader)["id"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getId()));
+		(*jsonHeader)["from"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getFrom()));
+		(*jsonHeader)["to"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getTo()));
 
 		return jsonHeader;
 	}
@@ -67,8 +67,8 @@ class JsonTranslator
 			atoms.push_back(jsonToAtom(boost::static_pointer_cast<JsonObject>(*it)));
 
 		boost::shared_ptr<Transmission> transmission(new Transmission());
-		transmission->add_header(header);
-		transmission->add_atoms(atoms);
+		transmission->setHeader(header);
+		transmission->addAtoms(atoms);
 
 		return transmission;
 	}
