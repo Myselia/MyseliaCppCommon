@@ -3,6 +3,7 @@
 
 #include <common/communication/units/Atom.h>
 #include <common/communication/units/Header.h>
+#include <cppcommon/Opcode.h>
 
 using namespace boost;
 using namespace com::myselia::cppcommon;
@@ -21,12 +22,12 @@ namespace units
 class Transmission
 {
 	public:
-	Transmission()
+	Transmission(): Transmission(0, "", "")
 	{
 		//Do nothing
 	}
 
-	Transmission(int id, string from, string to): header(new Header(id, from, to))
+	Transmission(uint id, string from, string to): header(new Header(id, from, to))
 	{
 		//Do nothing
 	}
@@ -36,7 +37,12 @@ class Transmission
 		//Do nothing
 	}
 
-	void setId(int id)
+	Transmission(Destination destination): Transmission(0, "", destination.toString())
+	{
+		//Do nothing
+	}
+
+	void setId(uint id)
 	{
 		header->setId(id);
 	}

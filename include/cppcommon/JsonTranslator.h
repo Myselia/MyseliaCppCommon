@@ -38,7 +38,7 @@ class JsonTranslator
 	{
 		boost::shared_ptr<JsonObject> jsonHeader(new JsonObject());
 
-		(*jsonHeader)["id"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getId()));
+		(*jsonHeader)["id"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive((int)header->getId()));
 		(*jsonHeader)["from"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getFrom()));
 		(*jsonHeader)["to"]=boost::shared_ptr<JsonPrimitive>(new JsonPrimitive(header->getTo()));
 

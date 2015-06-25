@@ -154,6 +154,52 @@ class Opcode
 
 char Opcode::delimiter='_';
 
+class Destination
+{
+	public:
+	Destination(string componentId, Opcode opcode): componentId(componentId), opcode(opcode) {};
+
+	static Destination fromString(string str)
+	{
+		vector<string> tokens;
+
+		GenericUtil::tokenize(str, tokens, delimiter);
+
+		if(tokens.size()!=2)
+			throw IllegalArgumentException("Destination.fromString(): Invalid string: \""+str+"\" (tokens.size(): "+to_string(tokens.size())+")");
+
+		return Destination(tokens[0], Opcode::fromString(tokens[1]));
+	}
+
+	void setComponentId(string componentId)
+	{
+		this->componentId=componentId;
+	}
+
+	string getComponentId() const
+	{
+		return componentId;
+	}
+
+	Opcode getOpcode() const
+	{
+		return opcode;
+	}
+
+	string toString() const
+	{
+		return componentId+delimiter+opcode.toString();
+	}
+
+	private:
+	static char delimiter;
+
+	string componentId;
+	Opcode opcode;
+};
+
+char Destination::delimiter=':';
+
 }
 }
 }

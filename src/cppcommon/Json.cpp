@@ -263,6 +263,8 @@ string Json::parseCString(string jsonString, int& position, char stopChar)
 		{
 			if(ch=='\\')
 				str+="\\";
+			else if(ch=='"')
+				str+="\"";
 			else if(ch=='t')
 				str+="\t";
 			else if(ch=='r')
@@ -288,7 +290,7 @@ string Json::parseCString(string jsonString, int& position, char stopChar)
 			if(ch=='\\')
 				escapeCode=true;
 			else if(ch=='\n')
-				throw JsonParseException("Illegal newline ('\\n') in string as position "+to_string(position));
+				throw JsonParseException("Illegal newline ('\\n') in string as position "+to_string(position), jsonString, position);
 			else
 				str+=ch;
 		}
@@ -300,7 +302,7 @@ string Json::parseCString(string jsonString, int& position, char stopChar)
 	return str;
 }
 
-string Json::escapeQuotes(string str)
+string Json::escapeSpecialStringCharacters(string str)
 {
 	string ret="";
 
@@ -308,6 +310,14 @@ string Json::escapeQuotes(string str)
 	{
 		if(str[i]=='"')
 			ret+="\\\"";
+		else if(str[i]=='\\')
+			ret+="\\\\";
+		else if(str[i]=='\t')
+			ret+="\\t";
+		else if(str[i]=='\r')
+			ret+="\\r";
+		else if(str[i]=='\n')
+			ret+="\\n";
 		else
 			ret+=str[i];
 	}
@@ -451,7 +461,7 @@ boost::shared_ptr<JsonPrimitive> Json::parsePrimitive(string jsonString, int& po
 		char ch=read(jsonString, position);
 
 		if(ch<'0'||ch>'9')
-			throw JsonParseException("Expected integer at position "+to_string(start));
+			throw JsonParseException("Expected integer at position "+to_string(position), jsonString, position);
 
 		string str="";
 
@@ -536,7 +546,7 @@ string Json::serializePrimitive(const boost::shared_ptr<JsonPrimitive>& primitiv
 	else if(primitive->isInt())
 		return to_string(primitive->getAsInt());
 	else
-		return "\""+escapeQuotes(primitive->getAsString())+"\"";
+		return "\""+escapeSpecialStringCharacters(primitive->getAsString())+"\"";
 }
 
 string Json::serializeNull(const boost::shared_ptr<JsonNull>& null)

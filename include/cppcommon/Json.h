@@ -19,22 +19,44 @@ namespace cppcommon
 class JsonParseException: public GenericException
 {
 	public:
-	JsonParseException()
+	JsonParseException(): str(""), position(0)
 	{
 		//Do nothing
 	}
 
-	JsonParseException(string message) :
-			GenericException(message)
+	JsonParseException(string message): GenericException(message), str(""), position(0)
 	{
 		//Do nothing
 	}
 
-	JsonParseException(exception cause) :
-			GenericException(cause)
+	JsonParseException(string message, string str, int position): GenericException(message), str(str), position(position)
 	{
 		//Do nothing
 	}
+
+	JsonParseException(exception cause): GenericException(cause), str(""), position(0)
+	{
+		//Do nothing
+	}
+
+	virtual string getMessage() const
+	{
+		string message="";
+		message+=GenericException::getMessage();
+
+		if(str!="")
+		{
+			message+="\r\n"+str+"\r\n";
+			message+=GenericUtil::repeat(" ", position);
+			message+="^";
+		}
+
+		return message;
+	}
+
+	private:
+	string str;
+	int position;
 };
 
 class JsonElement;
@@ -150,7 +172,7 @@ class Json
 	 * This method keeps reading until it hits stopChar.
 	 */
 	static string parseCString(string jsonString, int& position, char stopChar);
-	static string escapeQuotes(string str);
+	static string escapeSpecialStringCharacters(string str);
 
 	static string serializeObject(const boost::shared_ptr<JsonObject>& object);
 	static string serializeArray(const boost::shared_ptr<JsonArray>& array);

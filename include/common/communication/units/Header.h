@@ -20,12 +20,12 @@ namespace units
 class Header
 {
 	public:
-	Header(int id, string from, string to): id(id), from(from), to(to)
+	Header(uint id, string from, string to): id(id), from(from), to(to)
 	{
 		//Do nothing
 	}
 
-	void setId(int id)
+	void setId(uint id)
 	{
 		this->id=id;
 	}
@@ -40,7 +40,7 @@ class Header
 		this->to=to;
 	}
 
-	int getId()
+	uint getId()
 	{
 		return id;
 	}
@@ -56,7 +56,7 @@ class Header
 	}
 
 	private:
-	int id;
+	uint id;
 	string from;
 	string to;
 };

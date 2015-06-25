@@ -14,7 +14,7 @@
 #include <exception>
 #include <limits>
 
-#include <boost/shared_ptr.hpp>
+#include <boost/smart_ptr.hpp>
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 
@@ -56,19 +56,19 @@ class GenericException: public runtime_error
 		this->cause=cause;
 	}
 
-	string getMessage()
+	virtual string getMessage() const
 	{
 		return message;
 	}
 
-	exception getCause()
+	exception getCause() const
 	{
 		return cause;
 	}
 
 	const char* what() const throw()
 	{
-		return message.c_str();
+		return getMessage().c_str();
 	}
 
 	private:
@@ -309,6 +309,16 @@ class GenericUtil
 		cout << endl;
 	}
 
+	static string repeat(string str, uint times)
+	{
+		string ret="";
+
+		for(uint i=0; i<times; i++)
+			ret+=str;
+
+		return ret;
+	}
+
 	static void tokenize(const string& str, vector<string>& tokens, const char delimiter = ' ')
 	{
 	    string token="";
@@ -358,9 +368,19 @@ class GenericUtil
 		return rangeGenerator();
 	}
 
-	static int generateRandomNumber()
+	static int generateRandomInt()
 	{
 		return generateRandomNumber(numeric_limits<int>::min(), numeric_limits<int>::max());
+	}
+
+	static int generateRandomPositiveInt()
+	{
+		return generateRandomNumber(0, numeric_limits<int>::max());
+	}
+
+	static uint generateRandomUint()
+	{
+		return (uint)generateRandomNumber(numeric_limits<uint>::min(), numeric_limits<uint>::max());
 	}
 };
 

@@ -16,25 +16,6 @@ namespace myselia
 namespace cppcommon
 {
 
-class BufferedTIS
-{
-	public:
-	BufferedTIS(boost::shared_ptr<TransmissionInputStream> tis)
-	{
-		//
-	}
-
-	private:
-	boost::shared_ptr<TransmissionInputStream> tis;
-	boost::thread readTh;
-	std::list<boost::shared_ptr<Transmission>> buffer;
-
-	void read()
-	{
-		//
-	}
-};
-
 class TransmissionChannel
 {
 	public:
@@ -61,53 +42,12 @@ class TransmissionChannel
 
 typedef boost::function<void(boost::shared_ptr<Transmission>)> TransmissionListener;
 
-class Destination
-{
-	public:
-	Destination(string componentId, Opcode opcode): componentId(componentId), opcode(opcode) {};
-
-	static Destination fromString(string str)
-	{
-		vector<string> tokens;
-
-		GenericUtil::tokenize(str, tokens, delimiter);
-
-		if(tokens.size()!=2)
-			throw IllegalArgumentException("Destination.fromString(): Invalid string: \""+str+"\" (tokens.size(): "+to_string(tokens.size())+")");
-
-		return Destination(tokens[0], Opcode::fromString(tokens[1]));
-	}
-
-	string getComponentId() const
-	{
-		return componentId;
-	}
-
-	Opcode getOpcode() const
-	{
-		return opcode;
-	}
-
-	string toString() const
-	{
-		return componentId+delimiter+opcode.toString();
-	}
-
-	private:
-	static char delimiter;
-
-	string componentId;
-	Opcode opcode;
-};
-
-char Destination::delimiter=':';
-
 class TransmissionSender
 {
 	public:
 	virtual ~TransmissionSender() {};
 
-	virtual void send(Destination destination, boost::shared_ptr<Transmission> transmission) = 0;
+	virtual void send(boost::shared_ptr<Transmission> transmission) = 0;
 };
 
 class TransmissionReceiver
@@ -151,13 +91,30 @@ class BasicTransmissionService: public TransmissionService
 		channelHandlers.add_thread(thread);
 	}
 
-	void send(Destination destination, boost::shared_ptr<Transmission> transmission)
+	void send(boost::shared_ptr<Transmission> transmission)
 	{
-		transmission->setId(GenericUtil::generateRandomNumber());
-		transmission->setFrom(componentId);
+		Destination destination=Destination::fromString(transmission->getTo());
 
-		/*
-		 * Here you would normally use routing to determine through which channel
+		//Set Transmission ID
+		transmission->setId((uint)GenericUtil::generateRandomPositiveInt());
+
+		//Set only the component ID (opcode should have been set by the sender).
+		boost::shared_ptr<Destination> from;
+
+		try
+		{
+			from=boost::make_shared<Destination>(Destination::fromString(transmission->getFrom()));
+		}
+		catch(IllegalArgumentException& e )
+		{
+			cout << "Error: sender did not set its address correctly. Address: '" << transmission->getFrom() << "'" << endl;
+			throw e;
+		}
+
+		from->setComponentId(componentId);
+		transmission->setFrom(from->toString());
+
+		/* Here you would normally use routing to determine through which channel
 		 * to send the Transmission. The current implementation just sends it to all channels.
 		 */
 
@@ -225,36 +182,38 @@ class BasicTransmissionService: public TransmissionService
 			receivedTransmissions.insert(transmission->getHeader()->getId());
 			receivedTransmissionsMutex.unlock();
 
+			boost::shared_ptr<Destination> to;
+
 			try
 			{
-				Destination to=Destination::fromString(transmission->getHeader()->getTo());
-
-				//If the transmission targets this component.
-				if(to.getComponentId()==componentId)
-				{
-					listenersMutex.lock();
-
-					//If there is a listener that listens for this opcode.
-					if(listeners.find(to.getOpcode())!=listeners.end())
-					{
-						//Call listener
-						TransmissionListener listener=listeners[to.getOpcode()];
-
-						listenersMutex.unlock();
-
-						listener(transmission);
-					}
-				}
-				else
-				{
-					//The transmission does not target this component. Send the transmission to the corresponding channel.
-					send(to, transmission);
-				}
+				to=boost::shared_ptr<Destination>(boost::make_shared<Destination>(Destination::fromString(transmission->getHeader()->getTo())));
 			}
 			catch(GenericException& e)
 			{
 				cout << "BasicTransmissionService: error parsing Transmission destination: \""+transmission->getHeader()->getTo()+"\", error: " << e.getMessage() << endl;
 				continue;
+			}
+
+			//If the transmission targets this component.
+			if(to->getComponentId()==componentId)
+			{
+				listenersMutex.lock();
+
+				//If there is a listener that listens for this opcode.
+				if(listeners.find(to->getOpcode())!=listeners.end())
+				{
+					//Call listener
+					TransmissionListener listener=listeners[to->getOpcode()];
+
+					listenersMutex.unlock();
+
+					listener(transmission);
+				}
+			}
+			else
+			{
+				//The transmission does not target this component. Send the transmission to the corresponding channel.
+				send(transmission);
 			}
 		}
 	}
