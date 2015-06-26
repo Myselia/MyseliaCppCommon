@@ -67,6 +67,11 @@ class TransmissionService: public TransmissionSender, public TransmissionReceive
 class BasicTransmissionService: public TransmissionService
 {
 	public:
+	BasicTransmissionService(): BasicTransmissionService(boost::to_string(GenericUtil::generateRandomPositiveInt()))
+	{
+		//Do nothing
+	}
+
 	BasicTransmissionService(string componentId): componentId(componentId)
 	{
 		//Do nothing

@@ -166,22 +166,22 @@ list<boost::shared_ptr<JsonElement>>::iterator JsonArray::end()
 JsonObject::JsonObject() :
 		JsonElement(JsonElementType::JsonObject)
 {
-	map=unordered_map<string, boost::shared_ptr<JsonElement>>();
+	map=std::unordered_map<string, boost::shared_ptr<JsonElement>>();
 }
 
 boost::shared_ptr<JsonElement>& JsonObject::operator[](string name)
 {
 	boost::shared_ptr<com::myselia::cppcommon::JsonNull> null(new com::myselia::cppcommon::JsonNull);
 
-	return ( *((map.insert(unordered_map<string, boost::shared_ptr<JsonElement>>::value_type(name, null))).first)).second;
+	return ( *((map.insert(std::unordered_map<string, boost::shared_ptr<JsonElement>>::value_type(name, null))).first)).second;
 }
 
-unordered_map<string, boost::shared_ptr<JsonElement>>::iterator JsonObject::begin()
+std::unordered_map<string, boost::shared_ptr<JsonElement>>::iterator JsonObject::begin()
 {
 	return map.begin();
 }
 
-unordered_map<string, boost::shared_ptr<JsonElement>>::iterator JsonObject::end()
+std::unordered_map<string, boost::shared_ptr<JsonElement>>::iterator JsonObject::end()
 {
 	return map.end();
 }
@@ -278,7 +278,7 @@ string Json::parseCString(string jsonString, int& position, char stopChar)
 				message+="Unknown escape code '\\";
 				message+=ch;
 				message+="' at position ";
-				message+=to_string(position-1);
+				message+=std::to_string(position-1);
 
 				throw JsonParseException(message);
 			}
@@ -290,7 +290,7 @@ string Json::parseCString(string jsonString, int& position, char stopChar)
 			if(ch=='\\')
 				escapeCode=true;
 			else if(ch=='\n')
-				throw JsonParseException("Illegal newline ('\\n') in string as position "+to_string(position), jsonString, position);
+				throw JsonParseException("Illegal newline ('\\n') in string as position "+std::to_string(position), jsonString, position);
 			else
 				str+=ch;
 		}
@@ -328,7 +328,7 @@ string Json::escapeSpecialStringCharacters(string str)
 boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position)
 {
 	if(read(jsonString, position)!='{')
-		throw JsonParseException("Expected object at position "+to_string(position));
+		throw JsonParseException("Expected object at position "+std::to_string(position));
 
 	position++;
 
@@ -342,7 +342,7 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 
 			//Parse key
 			if(!checkEqual(jsonString, position, "\""))
-				throw JsonParseException("Expected object key (string starting with '\"') at position "+to_string(position));
+				throw JsonParseException("Expected object key (string starting with '\"') at position "+std::to_string(position));
 
 			position++;
 			string key=parseCString(jsonString, position, '"');
@@ -352,7 +352,7 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 			skipSpaces(jsonString, position);
 
 			if(!checkEqual(jsonString, position, ":"))
-				throw JsonParseException("Expected ':' at position "+to_string(position));
+				throw JsonParseException("Expected ':' at position "+std::to_string(position));
 			position++;
 
 			boost::shared_ptr<JsonElement> value=parse(jsonString, position);
@@ -366,7 +366,7 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 				break;
 
 			if(read(jsonString, position)!=',')
-				throw JsonParseException("Expected property delimiter (',') at position "+to_string(position));
+				throw JsonParseException("Expected property delimiter (',') at position "+std::to_string(position));
 
 			position++;
 		}
@@ -380,7 +380,7 @@ boost::shared_ptr<JsonObject> Json::parseObject(string jsonString, int& position
 boost::shared_ptr<JsonArray> Json::parseArray(string jsonString, int& position)
 {
 	if(read(jsonString, position)!='[')
-		throw JsonParseException("Expected array at position "+to_string(position));
+		throw JsonParseException("Expected array at position "+std::to_string(position));
 
 	position++;
 
@@ -400,7 +400,7 @@ boost::shared_ptr<JsonArray> Json::parseArray(string jsonString, int& position)
 				break;
 
 			if( !checkEqual(jsonString, position, ","))
-				throw JsonParseException("Expected array element delimiter (',') at position "+to_string(position));
+				throw JsonParseException("Expected array element delimiter (',') at position "+std::to_string(position));
 
 			position++;
 		}
@@ -461,7 +461,7 @@ boost::shared_ptr<JsonPrimitive> Json::parsePrimitive(string jsonString, int& po
 		char ch=read(jsonString, position);
 
 		if(ch<'0'||ch>'9')
-			throw JsonParseException("Expected integer at position "+to_string(position), jsonString, position);
+			throw JsonParseException("Expected integer at position "+std::to_string(position), jsonString, position);
 
 		string str="";
 
@@ -472,7 +472,7 @@ boost::shared_ptr<JsonPrimitive> Json::parsePrimitive(string jsonString, int& po
 			ch=read(jsonString, position);
 		}
 
-		boost::shared_ptr<JsonPrimitive> primitive(new JsonPrimitive(stoi(str)));
+		boost::shared_ptr<JsonPrimitive> primitive(new JsonPrimitive(std::stoi(str)));
 
 		return primitive;
 	}
@@ -481,7 +481,7 @@ boost::shared_ptr<JsonPrimitive> Json::parsePrimitive(string jsonString, int& po
 boost::shared_ptr<JsonNull> Json::parseNull(string jsonString, int& position)
 {
 	if( !checkEqual(jsonString, position, "null"))
-		throw JsonParseException("Expected \"null\" at position "+to_string(position));
+		throw JsonParseException("Expected \"null\" at position "+std::to_string(position));
 
 	position+=4;
 
@@ -493,7 +493,7 @@ boost::shared_ptr<JsonNull> Json::parseNull(string jsonString, int& position)
 string Json::serializeObject(const boost::shared_ptr<JsonObject>& object)
 {
 	string str="{";
-	unordered_map<string, boost::shared_ptr<JsonElement>>::iterator it;
+	std::unordered_map<string, boost::shared_ptr<JsonElement>>::iterator it;
 	bool first=true;
 
 	for(it=object->begin(); it!=object->end(); it++)
@@ -544,7 +544,7 @@ string Json::serializePrimitive(const boost::shared_ptr<JsonPrimitive>& primitiv
 			return "false";
 	}
 	else if(primitive->isInt())
-		return to_string(primitive->getAsInt());
+		return std::to_string(primitive->getAsInt());
 	else
 		return "\""+escapeSpecialStringCharacters(primitive->getAsString())+"\"";
 }

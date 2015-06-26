@@ -141,11 +141,11 @@ class JsonObject: public JsonElement
 
 	boost::shared_ptr<JsonElement>& operator[](string name);
 
-	unordered_map<string, boost::shared_ptr<JsonElement>>::iterator begin();
-	unordered_map<string, boost::shared_ptr<JsonElement>>::iterator end();
+	std::unordered_map<string, boost::shared_ptr<JsonElement>>::iterator begin();
+	std::unordered_map<string, boost::shared_ptr<JsonElement>>::iterator end();
 
 	private:
-	unordered_map<string, boost::shared_ptr<JsonElement>> map;
+	std::unordered_map<string, boost::shared_ptr<JsonElement>> map;
 };
 
 /**
