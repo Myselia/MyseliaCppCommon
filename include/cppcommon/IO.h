@@ -105,7 +105,8 @@ class Socket: public Channel, public boost::enable_shared_from_this<Socket>
 class AsioInputStream: public InputStream
 {
 	public:
-	AsioInputStream(boost::shared_ptr<Socket> socket): socket(socket), WAIT_TIME(50), operationDone(true), eofReached(false)
+	AsioInputStream(boost::shared_ptr<Socket> socket): socket(socket), WAIT_TIME(50), operationDone(true),
+		eofReached(false), lastNumBytesRead(0)
 	{
 		//Do nothing
 	}
@@ -207,7 +208,16 @@ class AsioInputStream: public InputStream
 
 		if(errorReading)
 		{
-			if(errorReading==asio::error::eof)
+			//If the error occurred after successfully reading come bytes.
+			if(lastNumBytesRead>0)
+			{
+				//Return read bytes and throw error at next call.
+				size_t bytesReturned=this->buffer.getSize();
+				buffer=this->buffer.removeFront(bytesReturned);
+				operationMutex.unlock();
+				return bytesReturned;
+			}
+			else if(errorReading==asio::error::eof)
 			{
 				eofReached=true;
 				operationMutex.unlock();
@@ -256,6 +266,7 @@ class AsioInputStream: public InputStream
 	bool eofReached;
 	ByteBuffer readPendingBuffer;
 	ByteBuffer buffer;
+	size_t lastNumBytesRead;
 
 	void startRead(size_t numBytesToRead)
 	{
@@ -270,7 +281,8 @@ class AsioInputStream: public InputStream
 
 	void readDone(const system::error_code& error, size_t bytesRead)
 	{
-		buffer+=readPendingBuffer;
+		lastNumBytesRead=bytesRead;
+		buffer.append(readPendingBuffer.getAsCstring(), bytesRead);
 		readPendingBuffer.clear();
 
 		errorReading=error;

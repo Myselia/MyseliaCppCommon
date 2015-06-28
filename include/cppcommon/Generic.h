@@ -19,6 +19,7 @@
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include <boost/uuid/sha1.hpp>
+#include <boost/filesystem.hpp>
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -252,6 +253,31 @@ class ByteBuffer
 		return frontBuf;
 	}
 
+	void append(const ByteBuffer& buffer)
+	{
+		append(buffer.getAsCstring(), buffer.getSize());
+	}
+
+	void append(char const* cstr, size_t length)
+	{
+		uchar tmpBuf[size];
+
+		for(size_t i=0; i<size; i++)
+			tmpBuf[i]=data[i];
+
+		const size_t oldSize=size;
+
+		delete data;
+		size+=length;
+		data=new uchar[size];
+
+		for(size_t i=0; i<oldSize; i++)
+			data[i]=tmpBuf[i];
+
+		for(size_t i=oldSize; i<size; i++)
+			data[i]=cstr[i-oldSize];
+	}
+
 	uchar& operator[](size_t position) const
 	{
 		if(position>size-1)
@@ -262,22 +288,7 @@ class ByteBuffer
 
 	void operator+=(const ByteBuffer& buffer)
 	{
-		uchar tmpBuf[size];
-
-		for(size_t i=0; i<size; i++)
-			tmpBuf[i]=data[i];
-
-		const size_t oldSize=size;
-
-		delete data;
-		size+=buffer.getSize();
-		data=new uchar[size];
-
-		for(size_t i=0; i<oldSize; i++)
-			data[i]=tmpBuf[i];
-
-		for(size_t i=oldSize; i<size; i++)
-			data[i]=buffer[i-oldSize];
+		append(buffer);
 	}
 
 	void operator=(const ByteBuffer& buffer)
