@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <string>
 #include <unordered_map>
@@ -17,10 +18,12 @@
 #include <boost/smart_ptr.hpp>
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
+#include <boost/uuid/sha1.hpp>
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
+typedef uint uint_array_5[5];
 
 using namespace std;
 
@@ -125,7 +128,7 @@ class ByteBuffer
 	/**
 	 * Creates a buffer of length <code>size</code> (not initialized).
 	 */
-	ByteBuffer(size_t size)
+	ByteBuffer(size_t size): size(0), data(NULL)
 	{
 		reset(size);
 	}
@@ -133,7 +136,7 @@ class ByteBuffer
 	/**
 	 * Creates a copy of the provided buffer.
 	 */
-	ByteBuffer(const ByteBuffer& buffer): data(NULL)
+	ByteBuffer(const ByteBuffer& buffer): size(0), data(NULL)
 	{
 		copy(buffer);
 	}
@@ -141,9 +144,17 @@ class ByteBuffer
 	/**
 	 * Creates a buffer with the same length and value as the string.
 	 */
-	ByteBuffer(string str): data(NULL)
+	ByteBuffer(string str): size(0), data(NULL)
 	{
 		copy(str.c_str(), str.length());
+	}
+
+	/**
+	 * Creates a buffer with length <code>length</code> and same value as the C string.
+	 */
+	ByteBuffer(char const* cstr, size_t length): size(0), data(NULL)
+	{
+		copy(cstr, length);
 	}
 
 	~ByteBuffer()
@@ -159,6 +170,11 @@ class ByteBuffer
 	size_t getSize() const
 	{
 		return size;
+	}
+
+	char const* getAsCstring() const
+	{
+		return (char*)data;
 	}
 
 	const string getAsString() const
@@ -178,9 +194,9 @@ class ByteBuffer
 
 	void reset(size_t size)
 	{
-		if(size==0)
-			clear();
-		else
+		clear();
+
+		if(size>0)
 		{
 			this->size=size;
 			data=new uchar[size];
@@ -279,6 +295,49 @@ class ByteBuffer
 	private:
 	uchar* data;
 	size_t size;
+};
+
+class Sha1Hash
+{
+	public:
+	uint_array_5 hash;
+
+	Sha1Hash(uint_array_5& hash)
+	{
+		for(size_t i=0; i<5; i++)
+			this->hash[i]=hash[i];
+	}
+
+	size_t getSizeInBytes()
+	{
+		return sizeof(hash);
+	}
+
+	/**
+	 * Returns a reference to a uint_array_5 (uint[5]).
+	 */
+	/*(&operator uint())[5]
+	{
+		return hash;
+	}*/
+
+	operator char*()
+	{
+		const char* tmp = reinterpret_cast<char*>(hash);
+
+		for(int i = 0; i < 5; ++i)
+		{
+			bytearr[i*4] = tmp[i*4+3];
+			bytearr[i*4+1] = tmp[i*4+2];
+			bytearr[i*4+2] = tmp[i*4+1];
+			bytearr[i*4+3] = tmp[i*4];
+		}
+
+		return bytearr;
+	}
+
+	private:
+	char bytearr[20]; //For conversion to char*
 };
 
 class GenericUtil
@@ -381,6 +440,60 @@ class GenericUtil
 	static uint generateRandomUint()
 	{
 		return (uint)generateRandomNumber(numeric_limits<uint>::min(), numeric_limits<uint>::max());
+	}
+
+	static std::vector<char> readAllBytes(string filename)
+	{
+		ifstream ifs(filename, ios::binary|ios::ate);
+		ifstream::pos_type pos = ifs.tellg();
+
+		std::vector<char>  result(pos);
+
+		ifs.seekg(0, ios::beg);
+		ifs.read(&result[0], pos);
+
+		return result;
+	}
+
+	static Sha1Hash getSha1Hash(string filename)
+	{
+		std::ifstream ifs(filename, std::ios::binary);
+
+		if(!ifs.good())
+			throw GenericException("Unable to read file: '"+filename+"'");
+
+		boost::uuids::detail::sha1 sha1;
+		uint_array_5 mydigest;
+		char buf[1024];
+
+		while(ifs.good()) {
+			ifs.read(buf, sizeof(buf));
+			sha1.process_bytes(buf, ifs.gcount());
+		}
+
+		if(!ifs.eof())
+			throw GenericException("Error while reading file: '"+filename+"'");
+
+		ifs.close();
+		sha1.get_digest(mydigest);
+
+		return Sha1Hash(mydigest);
+	}
+
+	static string getHexString(char const* data, size_t size)
+	{
+		string str;
+		char const hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+		for(size_t i=0; i<size; i++)
+		{
+		    char const byte = data[i];
+
+		    str+=hex_chars[(byte & 0xF0) >> 4];
+		    str+=hex_chars[(byte & 0x0F) >> 0];
+		}
+
+		return str;
 	}
 };
 
