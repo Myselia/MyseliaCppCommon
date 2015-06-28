@@ -2,7 +2,7 @@
 CC=g++
 CFLAGS=-I include -std=c++11 -c
 LDFLAGS=
-LIBFLAGS=-lboost_system -lboost_thread
+LIBFLAGS=-lboost_system -lboost_thread -lboost_filesystem
 EXECUTABLE=MyseliaCppCommon
 LIBNAME=MyseliaCppCommon.a
 MAINFILE=main.cpp
@@ -12,7 +12,9 @@ SOURCES = $(shell find $(SRCDIR)/ -name "*.cpp")
 OBJECTS = $(subst $(SRCDIR)/,$(OBJDIR)/,$(SOURCES:.cpp=.o))
 
 # PHONY (non-file targets)
-.PHONY: clean all cppcommon library
+.PHONY: clean all cleanAndAll cppcommon library
+
+cleanAndAll: clean all
 
 all: cppcommon library
 
