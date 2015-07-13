@@ -4,14 +4,14 @@ C++ Common code.
 ## Dev Dependencies
 1. Have a Unix-like OS
 2. Run: `# apt-get install g++` or install g++ on your system any other way.
-3. make `# apt-get install g++`or install make on your system any other way.
+3. make `# apt-get install make`or install make on your system any other way.
 
 ## Application Dependencies
 - c++11
-- boost : libboost-dev 1.55.0.2+ (`apt-get install libboost-dev`)
-- boost_system : libboost-system-dev 1.55.0.2+ (`apt-get install libboost-system-dev`)
-- boost_thread : libboost-thread-dev 1.55.0.2+ (`apt-get install libboost-thread-dev`)
-- boost_filesystem : libboost-filesystem-dev 1.55.0.2+ (`apt-get install libboost-filesystem-dev`)
+- boost : libboost-dev 1.55.0.2+ (`# apt-get install libboost-dev`)
+- boost_system : libboost-system-dev 1.55.0.2+ (`# apt-get install libboost-system-dev`)
+- boost_thread : libboost-thread-dev 1.55.0.2+ (`# apt-get install libboost-thread-dev`)
+- boost_filesystem : libboost-filesystem-dev 1.55.0.2+ (`# apt-get install libboost-filesystem-dev`)
 
 ## How to Compile
 ### Command line
